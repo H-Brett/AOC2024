@@ -1,9 +1,9 @@
 // H-Brett
-// 12.4.2024
+// 12.4.2024 - 12.5.2024
 // Advent of Code 2024 Day 4
 
 // Part 1 2414
-// Part 2
+// Part 2 1871
 
 const fs = require('fs');
 
@@ -50,6 +50,25 @@ fs.readFile('./input.txt', (err, data) => {
 		return rotArr.join('').split('\n');
 	}
 
+	const getWindow = (match, lineIndex, arr, windSize) => {
+		let windArr = []
+		let hStart = lineIndex - windSize;
+			hStart < 1 ? hStart = 0 : null;
+		let hEnd = lineIndex + windSize;
+			hEnd > arr.length - 1 ? hEnd = arr.length - 1 : null;
+		let wStart = match.index - windSize;
+			wStart < 1 ? wStart = 0  : null; 
+		let wEnd = match.index + windSize + 1;
+			wEnd > arr[lineIndex].length ? wEnd = arr[lineIndex].length : null;
+
+
+		for (let i = hStart; i <= hEnd; i++) {
+			windArr.push(arr[i].slice(wStart,wEnd))
+		}
+
+		return windArr;
+	}
+
 	const part1 = (input) => {
 		let xmasReg = /XMAS/gi
 		let count = 0;
@@ -63,7 +82,6 @@ fs.readFile('./input.txt', (err, data) => {
 		let threeFifteen = rot45(twoSeventy)
 		
 		let combined = input.concat(fortyFive).concat(ninety).concat(oneThirtyFive).concat(oneEighty).concat(twoTwentyFive).concat(twoSeventy).concat(threeFifteen)
-		//console.log(combined.join('\n'))
 
 		combined.forEach((line) => {
 			count += [...line.matchAll(xmasReg)].length
@@ -72,6 +90,29 @@ fs.readFile('./input.txt', (err, data) => {
 		return count; 
 	}
 
+	const part2 = (input) => {
+		let count = 0;
+		let regex = /(MAS)|(SAM)/i
 
-	console.log(part1(inArr))
+		input.forEach((line, i, arr) => {
+			let matches = [...line.matchAll(/A/gi)]
+			if (matches) {
+				matches.forEach((match) => {
+					let wind = getWindow(match, i, arr, 1)
+					if (wind.length < 3 || wind[0].length < 3) {
+						null;
+					} else {
+						if( regex.test([...wind[0][2], wind[1][1], wind[2][0]].join('')) && regex.test([...wind[0][0], wind[1][1], wind[2][2]].join('')) ) {
+							count++;
+						}
+					}
+				})
+			}
+		})
+
+		return count;
+	}
+
+	console.log('Part 1: ', part1(inArr))
+	console.log('Part 2: ', part2(inArr))
 });
