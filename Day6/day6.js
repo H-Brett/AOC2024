@@ -66,18 +66,25 @@ fs.readFile('./input.txt', (err, data) => {
 						y: next[1],
 						heading: path[path.length - 1].heading,
 					})
+
+					if (detectLoop(path)) {
+						return false;
+					}
 				}
+				
 			}
 
-			if (detectLoop(path)) {
-					return false;
-			}
+			
 		}
 
 		return path;
 	}
 
 	const detectLoop = (path) => {
+
+		return path.length > boardL * boardW * 2 ? true : false;
+
+		/*
 		let structured = {
 			north: {},
 			east: {},
@@ -96,6 +103,7 @@ fs.readFile('./input.txt', (err, data) => {
 		}
 
 		return false;
+		*/
 	}
 
 	const calcUnique = (path) => {
@@ -128,31 +136,38 @@ fs.readFile('./input.txt', (err, data) => {
 	const calcPart2 = (path, obst) => {
 		let count = 0;
 		let part2path = [...path];
+		let addedObs = []
 		part2path = calcUnique(part2path);
 
-
-		//console.log(startVec)
 		for ( x in part2path ) {
 			part2path[x].forEach((val) => {
-
-				//console.log('outside', x, val)
 				if((parseInt(x) != startVec.x || val != startVec.y)) {
-					//console.log(x, val)
 					let workingObst = structuredClone(obst);
 
-					if(!workingObst[x]) {
-						workingObst[x] = new Set; 
+					if(!workingObst[parseInt(x)]) {
+						workingObst[parseInt(x)] = new Set; 
 					}
 
-					workingObst[x].add(val)
+					workingObst[parseInt(x)].add(val)
 
 					if(!generatePath(startVec, workingObst)) {
+						addedObs.push([parseInt(x), val])
 						count++;
 					}
 				}
 			})
 		}
 
+		addedObs = addedObs.map((coord) => coord.join(','))
+
+/*
+		fs.writeFile('wtf.txt', addedObs.join(',\n'), (err) => {
+			if (err) console.error(err);
+			else {
+				console.log('Write Success')
+			}
+		})
+*/
 		return count;
 	};
 
@@ -182,6 +197,8 @@ console.time('main');
 			}
 		}
 	})
+
+	console.log(startVec)
 
 	let path = generatePath(startVec, obstacles);
 	console.time('Part1');
