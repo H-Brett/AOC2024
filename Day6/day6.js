@@ -71,39 +71,14 @@ fs.readFile('./input.txt', (err, data) => {
 						return false;
 					}
 				}
-				
 			}
-
-			
 		}
 
 		return path;
 	}
 
 	const detectLoop = (path) => {
-
-		return path.length > boardL * boardW * 2 ? true : false;
-
-		/*
-		let structured = {
-			north: {},
-			east: {},
-			south: {}, 
-			west: {}
-		}
-
-		for (let i = 0; i < path.length; i++) {
-			if(!structured[path[i].heading][path[i].x]) {
-				structured[path[i].heading][path[i].x] = new Set;
-			} else if (structured[path[i].heading][path[i].x].has(path[i].y)) {
-				return true;
-			}
-
-			structured[path[i].heading][path[i].x].add(path[i].y)
-		}
-
-		return false;
-		*/
+		return path.length > spaces ? true : false;
 	}
 
 	const calcUnique = (path) => {
@@ -136,7 +111,6 @@ fs.readFile('./input.txt', (err, data) => {
 	const calcPart2 = (path, obst) => {
 		let count = 0;
 		let part2path = [...path];
-		let addedObs = []
 		part2path = calcUnique(part2path);
 
 		for ( x in part2path ) {
@@ -151,23 +125,12 @@ fs.readFile('./input.txt', (err, data) => {
 					workingObst[parseInt(x)].add(val)
 
 					if(!generatePath(startVec, workingObst)) {
-						addedObs.push([parseInt(x), val])
 						count++;
 					}
 				}
 			})
 		}
 
-		addedObs = addedObs.map((coord) => coord.join(','))
-
-/*
-		fs.writeFile('wtf.txt', addedObs.join(',\n'), (err) => {
-			if (err) console.error(err);
-			else {
-				console.log('Write Success')
-			}
-		})
-*/
 		return count;
 	};
 
@@ -181,6 +144,8 @@ console.time('main');
 	const input = data.toString().split('\r\n');
 	const boardW = input[0].length;
 	const boardL = input.length;
+	let obsCount = 0;
+
 
 	input.forEach((line, y) => {
 		for (let x = 0; x < line.length; x++) {
@@ -198,8 +163,11 @@ console.time('main');
 		}
 	})
 
-	console.log(startVec)
+	for ( x in obstacles ) {
+		obsCount += obstacles[x].size
+	}
 
+	let spaces = boardW * boardL - obsCount;
 	let path = generatePath(startVec, obstacles);
 	console.time('Part1');
 	console.log('Part 1: ', calcPart1(path));
@@ -207,5 +175,5 @@ console.time('main');
 	console.time('Part2');
 	console.log('Part 2: ', calcPart2(path, obstacles));
 	console.timeEnd('Part2');
-console.timeEnd('main');
+	console.timeEnd('main');
 });
