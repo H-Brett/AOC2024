@@ -2,7 +2,7 @@
 // 12.8.2024
 // Advent Calendar of Code Day 7
 // Part 1 663613490587
-
+// Part 2 663613762061
 
 const fs = require("fs")
 
@@ -31,7 +31,8 @@ fs.readFile('./input.txt', (err, data) => {
 		if (operands.length == 2) {
 			results = [
 				(operands[0] + operands[1]), 
-				(operands[0] * operands[1])
+				(operands[0] * operands[1]),
+				parseInt(operands[1] + '' + operands[0])
 			]
 
 			return results
@@ -54,15 +55,10 @@ fs.readFile('./input.txt', (err, data) => {
 		const operations = ['add', 'mul']
 		let count = 0
 
-		//console.log(recurse(input[8].operands, operations))
-
 		input.forEach((calibration) => {
-			
-
 			if ( recurse(calibration.operands, operations).includes(calibration.result) ) {
 				count += calibration.result
 			}
-
 		})
 		console.log(count)
 	}
